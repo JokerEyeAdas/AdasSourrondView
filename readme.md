@@ -14,7 +14,8 @@ the project params described doc link:
 
 [surrond view doc](https://github.com/neozhaoliang/surround-view-system-introduction/blob/master/doc/en.md)
 
-## How To Build？
+## How To Build And Run？
+* build
 
 ```
 #!/bin/bash
@@ -22,6 +23,12 @@ mkdir build
 cd build 
 cmake ..
 make
+```
+* run
+
+```
+# make sure data(images amd yaml) path is ../../ before cur app
+./avm_app
 ```
 ## First Verison Demo(awb and lum banlance is not enable)
 ![first demo](./images/ADAS_EYES_360_VIEW.png)

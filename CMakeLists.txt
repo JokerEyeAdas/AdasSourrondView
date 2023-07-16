@@ -11,6 +11,7 @@ include_directories(${OpenCV_INCLUDE_DIRS})
 
 message(STATUS "opencv inc path " ${OpenCV_INCLUDE_DIRS})
 
+include_directories(./srcs)
 
 #add_subdirectory(source)
 set (
@@ -27,8 +28,8 @@ set (
 
 message (STATUS "get file srcs lits: " ${FILE_SRCS})
 
-add_executable (avm_cali avm_cali_demo.cpp common.cpp)
-add_executable (avm_app avm_app_demo.cpp common.cpp)
+add_executable (avm_cali avm_cali_demo.cpp ./srcs/common.cpp)
+add_executable (avm_app avm_app_demo.cpp ./srcs/common.cpp)
 
 include_directories(${OpenCV_INCLUDE_DIRS})
 link_directories(${OpenCV_LIBRARY_DIRS})
