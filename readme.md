@@ -1,7 +1,9 @@
-# 360 Surrond-View C++ Project
+# 360 Surround-View C++ Project
 ## WeChat&知乎：ADAS之眼
 
 ![wechat](./doc/wechat.png)
+
+**[个人博客网站传送门](https://jokereyeadas.github.io)**
 
 ## Reference Repo
 
@@ -30,9 +32,7 @@ make
 # make sure data(images amd yaml) path is ../../ before cur app
 ./avm_app
 ```
-## First Verison Demo(awb and lum banlance is not enable)
-![first demo](./images/ADAS_EYES_360_VIEW.png)
-
-## TODO:
-
-`add awb and lum banlance`
+## Result
+|awb and lum banlance disable|awb and lum banlance enable|
+|----|----|
+|![no banlance](./images/result/ADAS_EYES_360_VIEW_AWB_DISABLE.png)|![banlance](./images/result/ADAS_EYES_360_VIEW_AWB_ENABLE.png)|

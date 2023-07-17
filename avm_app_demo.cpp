@@ -8,39 +8,7 @@
 #include "common.h"
 
 //#define DEBUG
-#define AWB_ENALE    1
-#define LUM_BANLANCE 1
-
-static inline uint8_t clip(float data, int max)
-{
-    if (data > max)
-        return max;
-    return (uint8_t)data;
-}
-
-static void merge_image(cv::Mat& src1, cv::Mat& src2, cv::Mat& w, cv::Mat& out)
-{
-    if (src1.size() != src2.size()) {
-        return;
-    }
-
-    int p_index = 0;
-    float* weights = (float *)(w.data);
-    for (int h = 0; h < src1.rows; ++h) {
-        uchar* p1 = src1.data + h * src1.step;
-        uchar* p2 = src2.data + h * src2.step;
-        uchar*  o = out.data + h * out.step;
-        for (int w = 0; w < src1.cols; ++w) {
-            o[0] = clip(p1[0] * weights[p_index] + p2[0] * (1 - weights[p_index]), 255);
-            o[1] = clip(p1[1] * weights[p_index] + p2[1] * (1 - weights[p_index]), 255);
-            o[2] = clip(p1[2] * weights[p_index] + p2[2] * (1 - weights[p_index]), 255);
-            p1 += 3;
-            p2 += 3;
-            o  += 3;
-            ++p_index;
-        }
-    }
-}
+#define AWB_LUN_BANLANCE_ENALE    1
 
 int main(int argc, char** argv)
 {
@@ -51,6 +19,7 @@ int main(int argc, char** argv)
     cv::Mat merge_weights_img[4];
     cv::Mat out_put_img;
     float *w_ptr[4];
+    CameraPrms prms[4];
 
     //1.read image and read weights
     car_img = cv::imread("../../images/car.png");
@@ -67,8 +36,8 @@ int main(int argc, char** argv)
         merge_weights_img[i] = cv::Mat(weights.size(), CV_32FC1, cv::Scalar(0, 0, 0));
         w_ptr[i] = (float *)merge_weights_img[i].data;
     }
+    //read weights of corner
     int pixel_index = 0;
-
     for (int h = 0; h < weights.rows; ++h) {
         uchar* uc_pixel = weights.data + h * weights.step;
         for (int w = 0; w < weights.cols; ++w) {
@@ -88,16 +57,35 @@ int main(int argc, char** argv)
     }
 #endif
 
-    //2. undistort image
+    //1. read calibration prms
     for (int i = 0; i < 4; ++i) {
-        camera_prms prms;
-        prms.name = camera_names[i];
-        origin_dir_img[i] = cv::imread("../../images/" + prms.name + ".png");
+        auto& prm = prms[i];
+        prm.name = camera_names[i];
+        auto ok = read_prms("../../yaml/" + prm.name + ".yaml", prm);
+        if (!ok) {
+            return -1;
+        }
+    }
+
+     //2.lum equalization and awb for four channel image
+    std::vector<cv::Mat*> srcs;
+    for (int i = 0; i < 4; ++i) {
+        auto& prm = prms[i];
+        origin_dir_img[i] = cv::imread("../../images/" + prm.name + ".png");
+        srcs.push_back(&origin_dir_img[i]);
+    }
+
+#if AWB_LUN_BANLANCE_ENALE
+    awb_and_lum_banlance(srcs);
+#endif
+
+    //3. undistort image
+    for (int i = 0; i < 4; ++i) {
+        auto& prm = prms[i];
         cv::Mat& src = origin_dir_img[i];
        
-        read_prms("../../yaml/" + prms.name + ".yaml", prms);
-        undist_by_remap(src, src, prms);
-        cv::warpPerspective(src, src, prms.project_matrix, project_shapes[prms.name]);
+        undist_by_remap(src, src, prm);
+        cv::warpPerspective(src, src, prm.project_matrix, project_shapes[prm.name]);
         
         if (camera_flip_mir[i] == "r+") {
             cv::rotate(src, src, cv::ROTATE_90_CLOCKWISE);
@@ -110,8 +98,8 @@ int main(int argc, char** argv)
         //cv::imwrite(prms.name + "_undist.png", src);
         undist_dir_img[i] = src.clone();
     }
-    //3.
-    //TODO:add lum equalization and awb for four channel image
+
+    //4.start combine
     std::cout  << argv[0] << " app start combine" << std::endl;
     car_img.copyTo(out_put_img(cv::Rect(xl, yt, car_img.cols, car_img.rows)));
     //4.1 out_put_img center copy 

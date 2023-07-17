@@ -11,7 +11,7 @@
 
 #include "prms.hpp"
 
-struct camera_prms
+struct CameraPrms
 {
     std::string name;
     cv::Mat dist_coff;
@@ -24,9 +24,29 @@ struct camera_prms
     cv::Mat shift_xy;
 };
 
-void display_mat(cv::Mat& img, std::string name);
-bool read_prms(const std::string& path, camera_prms& prms);
-bool save_prms(const std::string& path, camera_prms& prms);
-void undist_by_remap(const cv::Mat& src, cv::Mat& dst, const camera_prms& prms);
+struct BgrSts {
+    int b;
+    int g;
+    int r;
 
+    BgrSts() {
+        b = g = r = 0;
+    }
+};
+
+template<typename _T>
+static inline _T clip(float data, int max)
+{
+    if (data > max)
+        return max;
+    return (_T)data;
+}
+
+void display_mat(cv::Mat& img, std::string name);
+bool read_prms(const std::string& path, CameraPrms& prms);
+bool save_prms(const std::string& path, CameraPrms& prms);
+void undist_by_remap(const cv::Mat& src, cv::Mat& dst, const CameraPrms& prms);
+
+void merge_image(cv::Mat& src1, cv::Mat& src2, cv::Mat& w, cv::Mat& out);
+void awb_and_lum_banlance(std::vector<cv::Mat*> srcs);
 #endif

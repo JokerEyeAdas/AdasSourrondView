@@ -48,7 +48,7 @@ int main(int argc, char** argv)
     std::cout  << argv[0] << " app start running..." << std::endl;
     
     for (int i = 0; i < 4; ++i) {
-        camera_prms prms;
+        CameraPrms prms;
         prms.name = camera_names[i];
 
         cv::Mat src = cv::imread("../../images/" + prms.name + ".png");
