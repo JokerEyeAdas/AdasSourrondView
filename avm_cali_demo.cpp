@@ -51,9 +51,9 @@ int main(int argc, char** argv)
         CameraPrms prms;
         prms.name = camera_names[i];
 
-        cv::Mat src = cv::imread("../../images/" + prms.name + ".png");
+        cv::Mat src = cv::imread("../images/" + prms.name + ".png");
         
-        read_prms("../../yaml/" + prms.name + ".yaml", prms);
+        read_prms("../yaml/" + prms.name + ".yaml", prms);
         undist_by_remap(src, src, prms);
         //if has not calibration，then we will cali it
         if (prms.project_matrix.empty()) 
@@ -70,7 +70,7 @@ int main(int argc, char** argv)
 
             prms.project_matrix =  cv::getPerspectiveTransform(m_prms.star_points, project_keypoints[prms.name]);
             cv::warpPerspective(src, src, prms.project_matrix, project_shapes[prms.name]);
-            save_prms("../../yaml/project_" + prms.name + ".yaml", prms);
+            save_prms("../yaml/project_" + prms.name + ".yaml", prms);
             cv::imwrite(prms.name + "_cali.png", mat_display);
         }
 

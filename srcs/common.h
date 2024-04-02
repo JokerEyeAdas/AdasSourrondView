@@ -47,6 +47,6 @@ bool read_prms(const std::string& path, CameraPrms& prms);
 bool save_prms(const std::string& path, CameraPrms& prms);
 void undist_by_remap(const cv::Mat& src, cv::Mat& dst, const CameraPrms& prms);
 
-void merge_image(cv::Mat& src1, cv::Mat& src2, cv::Mat& w, cv::Mat& out);
+void merge_image(cv::Mat src1, cv::Mat src2, cv::Mat& w, cv::Mat out);
 void awb_and_lum_banlance(std::vector<cv::Mat*> srcs);
 #endif

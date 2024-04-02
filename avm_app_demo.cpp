@@ -22,10 +22,10 @@ int main(int argc, char** argv)
     CameraPrms prms[4];
 
     //1.read image and read weights
-    car_img = cv::imread("../../images/car.png");
+    car_img = cv::imread("../images/car.png");
     cv::resize(car_img, car_img, cv::Size(xr - xl, yb - yt));
     out_put_img = cv::Mat(cv::Size(total_w, total_h), CV_8UC3, cv::Scalar(0, 0, 0));
-    cv::Mat weights = cv::imread("../../yaml/weights.png", -1);
+    cv::Mat weights = cv::imread("../yaml/weights.png", -1);
 
     if (weights.channels() != 4) {
         std::cerr << "imread weights failed " << weights.channels() << "\r\n";
@@ -61,7 +61,7 @@ int main(int argc, char** argv)
     for (int i = 0; i < 4; ++i) {
         auto& prm = prms[i];
         prm.name = camera_names[i];
-        auto ok = read_prms("../../yaml/" + prm.name + ".yaml", prm);
+        auto ok = read_prms("../yaml/" + prm.name + ".yaml", prm);
         if (!ok) {
             return -1;
         }
@@ -71,7 +71,7 @@ int main(int argc, char** argv)
     std::vector<cv::Mat*> srcs;
     for (int i = 0; i < 4; ++i) {
         auto& prm = prms[i];
-        origin_dir_img[i] = cv::imread("../../images/" + prm.name + ".png");
+        origin_dir_img[i] = cv::imread("../images/" + prm.name + ".png");
         srcs.push_back(&origin_dir_img[i]);
     }
 
