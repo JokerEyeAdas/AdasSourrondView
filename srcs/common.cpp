@@ -81,7 +81,7 @@ void undist_by_remap(const cv::Mat& src, cv::Mat& dst, const CameraPrms& prms)
 }
 
 //merge image by weights
-void merge_image(cv::Mat& src1, cv::Mat& src2, cv::Mat& w, cv::Mat& out)
+void merge_image(cv::Mat src1, cv::Mat src2, cv::Mat& w, cv::Mat out)
 {
     if (src1.size() != src2.size()) {
         return;
