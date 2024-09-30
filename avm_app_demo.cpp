@@ -12,7 +12,12 @@
 
 int main(int argc, char** argv)
 {
+    if (argc != 2) {
+        std::cout << "usage:\n\t" << argv[0] << " path\n";
+        return -1;
+    }
     std::cout  << argv[0] << " app start running..." << std::endl;
+    std::string data_path = std::string(argv[1]);
     cv::Mat car_img;
     cv::Mat origin_dir_img[4];
     cv::Mat undist_dir_img[4];
@@ -22,10 +27,10 @@ int main(int argc, char** argv)
     CameraPrms prms[4];
 
     //1.read image and read weights
-    car_img = cv::imread("../../images/car.png");
+    car_img = cv::imread(data_path + "/images/car.png");
     cv::resize(car_img, car_img, cv::Size(xr - xl, yb - yt));
     out_put_img = cv::Mat(cv::Size(total_w, total_h), CV_8UC3, cv::Scalar(0, 0, 0));
-    cv::Mat weights = cv::imread("../../yaml/weights.png", -1);
+    cv::Mat weights = cv::imread(data_path + "/yaml/weights.png", -1);
 
     if (weights.channels() != 4) {
         std::cerr << "imread weights failed " << weights.channels() << "\r\n";
@@ -52,7 +57,7 @@ int main(int argc, char** argv)
 
 #ifdef DEBUG
     for (int i = 0; i < 4; ++i) {
-        //0 左下 1 右上 2 左上 3 左下
+        //0 left bottom 1 right top 2 left top 3 right top
         display_mat(merge_weights_img[i], "w");
     }
 #endif
@@ -61,7 +66,7 @@ int main(int argc, char** argv)
     for (int i = 0; i < 4; ++i) {
         auto& prm = prms[i];
         prm.name = camera_names[i];
-        auto ok = read_prms("../../yaml/" + prm.name + ".yaml", prm);
+        auto ok = read_prms(data_path + "/yaml/" + prm.name + ".yaml", prm);
         if (!ok) {
             return -1;
         }
@@ -71,7 +76,7 @@ int main(int argc, char** argv)
     std::vector<cv::Mat*> srcs;
     for (int i = 0; i < 4; ++i) {
         auto& prm = prms[i];
-        origin_dir_img[i] = cv::imread("../../images/" + prm.name + ".png");
+        origin_dir_img[i] = cv::imread(data_path + "/images/" + prm.name + ".png");
         srcs.push_back(&origin_dir_img[i]);
     }
 
@@ -125,11 +130,12 @@ int main(int argc, char** argv)
         } 
     }
     //4.2the four corner merge
-    //w: 0 左下 1 右上 2 左上 3 左下
+    //w: 0 left bottom 1 right top 2 left top 3 right top
     //image: "front", "left", "back", "right"
     cv::Rect roi;
     //左上
     roi = cv::Rect(0, 0, xl, yt);
+    //!the mat must not be deepcopy!
     merge_image(undist_dir_img[0](roi), undist_dir_img[1](roi), merge_weights_img[2], out_put_img(roi));
     //右上
     roi = cv::Rect(xr, 0, xl, yt);

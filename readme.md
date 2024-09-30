@@ -29,8 +29,8 @@ make
 * run
 
 ```
-# make sure data(images amd yaml) path is ../../ before cur app
-./avm_app
+# make sure data(images amd yaml) path is ../ 
+./avm_app ../ #(../ is the image and yaml data path)
 ```
 ## Result
 |awb and lum banlance disable|awb and lum banlance enable|
